@@ -7,4 +7,10 @@
     <RootNamespace>Personal_Finance_Management.Web</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Personal-Finance-Management.Application\Personal-Finance-Management.Application.csproj" />
+    <ProjectReference Include="..\Personal-Finance-Management.Domain\Personal-Finance-Management.Domain.csproj" />
+    <ProjectReference Include="..\Personal-Finance-Management.Infrastructure\Personal-Finance-Management.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

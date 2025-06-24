@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Personal_Finance_Management.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Personal_Finance_Management.Infrastructure.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) :base(options)
         { }
+        public DbSet <Category> Categories { get; set; }
     }
 }

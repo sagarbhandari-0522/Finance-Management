@@ -1,16 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <RootNamespace>Personal_Finance_Management.Infrastructure</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Personal_Finance_Management.Web</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Personal-Finance-Management.Application\Personal-Finance-Management.Application.csproj" />
     <ProjectReference Include="..\Personal-Finance-Management.Domain\Personal-Finance-Management.Domain.csproj" />
-    <ProjectReference Include="..\Personal-Finance-Management.Infrastructure\Personal-Finance-Management.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

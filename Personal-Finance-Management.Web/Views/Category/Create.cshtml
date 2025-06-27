@@ -24,10 +24,13 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="Type" class="form-control border shadow" />
+                    <select asp-for="Type" class="form-control border shadow" asp-items="Model.CategoryTypes">
+                        <option value="">---Select Category--- </option>
+                    </select>
                     <label asp-for="Type" class="ms-2"></label>
                     <span asp-validation-for="Type" class="text-danger"></span>
                 </div>
+              
                 <div class="row pt-2">
                     <div class="col-6 col-md-3">
                         <button type="submit" class="btn btn-success w-100">

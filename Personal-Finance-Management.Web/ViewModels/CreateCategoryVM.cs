@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Personal_Finance_Management.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Personal_Finance_Management.Web.ViewModels
 {
@@ -6,8 +8,9 @@ namespace Personal_Finance_Management.Web.ViewModels
     {
         [Required]
         public  string Name { get; set; }
-        [Required]
-        public   string Type { get; set; }
+        [Required(ErrorMessage = "Please select a category type.")]
+        public CategoryType? Type { get; set; }
+        public List<SelectListItem> CategoryTypes { get; set; } = new();
 
     }
 }

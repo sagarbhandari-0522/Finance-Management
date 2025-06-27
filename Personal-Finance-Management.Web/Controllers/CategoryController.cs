@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Personal_Finance_Management.Application.Interfaces.IRepositories;
 using Personal_Finance_Management.Domain.Entities;
+using Personal_Finance_Management.Domain.Enums;
 using Personal_Finance_Management.Infrastructure.Repositories;
+using Personal_Finance_Management.Web.Helper;
 using Personal_Finance_Management.Web.ViewModels;
+using System.Collections.Generic;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
@@ -22,24 +26,29 @@ namespace Personal_Finance_Management.Web.Controllers
 
         public IActionResult Create()
         {
-            var categoryvm = new CreateCategoryVM();
+
+            var categoryvm = new CreateCategoryVM
+            {
+                CategoryTypes = CategoryTypeHelper.GetCategory()
+            };
             return View(categoryvm);
         }
         [HttpPost]
-        public async Task<IActionResult> Create (CreateCategoryVM model)
+        public async Task<IActionResult> Create(CreateCategoryVM model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var category = new Category
                 {
                     Name = model.Name,
-                    Type = model.Type,
+                    Type = (CategoryType)model.Type,
 
                 };
                 await _unitOfWork.CategoryRepository.AddAsync(category);
                 await _unitOfWork.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+            model.CategoryTypes = CategoryTypeHelper.GetCategory();
             return View(model);
         }
         public async Task<IActionResult> Edit(int id)
@@ -52,9 +61,10 @@ namespace Personal_Finance_Management.Web.Controllers
             }
             var updateCategoryVM = new UpdateCategoryVM
             {
-                Id=category.Id,
+                Id = category.Id,
                 Name = category.Name,
-                Type=category.Type
+                CategoryTypes = CategoryTypeHelper.GetCategory()
+
             };
             return View(updateCategoryVM);
         }
@@ -62,7 +72,11 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Update(UpdateCategoryVM model)
         {
             if (!ModelState.IsValid)
-                return View("Edit");
+            {
+                model.CategoryTypes = CategoryTypeHelper.GetCategory();
+                return View("Edit",model);
+
+            }
             var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
             if (category == null)
                 return RedirectToAction("Error", "Home");

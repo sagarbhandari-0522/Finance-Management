@@ -22,8 +22,10 @@ namespace Personal_Finance_Management.Web.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            var categoryvm = new CreateCategoryVM();
+            return View(categoryvm);
         }
+        [HttpPost]
         public async Task<IActionResult> Create (CreateCategoryVM model)
         {
             if(ModelState.IsValid)
@@ -77,12 +79,12 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 return RedirectToAction("Error", "Home");
             }
-            return View();
+            return View(category);
         }
         [HttpPost]
         public async Task<IActionResult> Delete(Category model)
         {
-            var category = await _unitOfWork.CategoryRepository.FindAsync(model);
+            var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
             if(category==null)
             {
                 TempData["error"] = "Invalid Request";

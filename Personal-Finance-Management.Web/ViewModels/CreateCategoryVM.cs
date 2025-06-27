@@ -1,9 +1,13 @@
-﻿namespace Personal_Finance_Management.Web.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Personal_Finance_Management.Web.ViewModels
 {
     public class CreateCategoryVM
     {
-        public required string Name { get; set; }
-        public required  string Type { get; set; }
+        [Required]
+        public  string Name { get; set; }
+        [Required]
+        public   string Type { get; set; }
 
     }
 }

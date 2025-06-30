@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Personal_Finance_Management.Domain.Entities;
+
 
 namespace Personal_Finance_Management.Application.Interfaces.IRepositories
 {
-    public interface IUnitOfWork
+    public interface ITransactionRepository : IRepository<Transaction>
     {
-        ICategoryRepository CategoryRepository { get; }
-        ITransactionRepository TransactionRepository { get; }
-        public Task<int> SaveChangesAsync();
+
     }
 }

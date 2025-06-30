@@ -11,11 +11,13 @@ namespace Personal_Finance_Management.Infrastructure.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         public ICategoryRepository CategoryRepository { get; }
+        public ITransactionRepository TransactionRepository { get; }
         private readonly AppDbContext _context;
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             CategoryRepository = new CategoryRepository(_context);
+            TransactionRepository = new TransactionRepository(_context);
         }
 
         public async Task<int> SaveChangesAsync()

@@ -58,7 +58,8 @@ namespace Personal_Finance_Management.Web.Controllers
                 Amount = transaction.Amount,
                 Description = transaction.Description,
                 CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync()),
-                CategoryId = transaction.CategoryId
+                CategoryId = transaction.CategoryId,
+                TransactionAt=transaction.CreatedAt
             };
             return View(updateTransactionVM);
         }
@@ -76,14 +77,17 @@ namespace Personal_Finance_Management.Web.Controllers
             transaction.Description = model.Description;
             transaction.Amount = model.Amount;
             transaction.CategoryId = model.CategoryId;
-            await _unitOfWork.TransactionRepository.AddAsync(transaction);
+            transaction.CreatedAt = model.TransactionAt ?? DateTime.UtcNow;
+            transaction.UpdatedAt = DateTime.UtcNow;
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var transaction = await _unitOfWork.TransactionRepository.FindAsync(id);
+            var transaction = await _unitOfWork.TransactionRepository.GetAsync(
+               filter: t => t.Id ==id,
+               include: q => q.Include(t=> t.Category));
             if (transaction == null)
                 return RedirectToAction("Error", "Home");
             return View(transaction);

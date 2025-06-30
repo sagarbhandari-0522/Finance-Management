@@ -1,0 +1,62 @@
+﻿@model Transaction
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Transaction Details</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <div class="row pb-3">
+            <div class="col-6 offset-6 text-end">
+                <a asp-controller="Transaction" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil-square"></i> Edit Transaction
+                </a>
+            </div>
+        </div>
+        <div class="row pb-3">
+            <div class="col-6 offset-6 text-end">
+                <a asp-controller="Transaction" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                    <i class="bi bi-trash-fill"></i> Delete Transaction
+                </a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered table striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Id</td>
+                <td>@Model.Id</td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>@Model.Category.Name</td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td>@Model.Description</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@Model.Category.Type</td>
+            </tr>
+            <tr>
+                <td>Amount</td>
+                <td>@Model.Amount.ToString("C")</td>
+            </tr>
+            <tr>
+                <td>Created At</td>
+                <td>@Model.CreatedAt</td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+

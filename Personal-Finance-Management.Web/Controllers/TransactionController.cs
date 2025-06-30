@@ -47,6 +47,16 @@ namespace Personal_Finance_Management.Web.Controllers
             model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
             return View(model);
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            var transaction = await _unitOfWork.TransactionRepository.GetAsync(
+                filter: t => t.Id==id,
+                include: q => q.Include(t=> t.Category)
+                );
+            if (transaction == null)
+                return RedirectToAction("Error", "Home");
+            return View(transaction);
+        }
 
         public async Task<IActionResult> Edit(int id)
         {

@@ -12,6 +12,18 @@
 </head>
 <body>
     <header>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <form asp-action="Logout" asp-controller="Account" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login">Login</a>
+            <a asp-controller="Account" asp-action="Register">Register</a>
+
+        }
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Finance Management</a>

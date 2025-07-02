@@ -25,7 +25,8 @@ namespace Personal_Finance_Management.Web.Controllers
             if (!ModelState.IsValid) return View(model);
             var user = new ApplicationUser
             {
-                FullName = model.FullName,
+                FirstName = model.FirstName,
+                LastName=model.LastName,
                 Email = model.Email,
                 UserName = model.Email
             };

@@ -9,6 +9,7 @@ namespace Personal_Finance_Management.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        public required string FullName { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
     }
 }

@@ -58,8 +58,7 @@ namespace Personal_Finance_Management.Web.Controllers
             ModelState.AddModelError(string.Empty, "Invalid Login attempt");
             return View(model);
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
+    [Authorize]
     public class CategoryController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -56,7 +58,7 @@ namespace Personal_Finance_Management.Web.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _unitOfWork.CategoryRepository.FindAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f =>(f.Id==id && f.UserId==CurrentUserId));
             if (category == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -80,7 +82,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 return View("Edit", model);
 
             }
-            var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id == model.Id && f.UserId == CurrentUserId));
             if (category == null)
                 return RedirectToAction("Error", "Home");
             category.Name = model.Name;
@@ -91,7 +93,7 @@ namespace Personal_Finance_Management.Web.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _unitOfWork.CategoryRepository.FindAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter:f => (f.Id == id && f.UserId == CurrentUserId));
             if (category == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -101,7 +103,7 @@ namespace Personal_Finance_Management.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Category model)
         {
-            var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id==model.Id && f.UserId==CurrentUserId));
             if (category == null)
             {
                 TempData["error"] = "Invalid Request";

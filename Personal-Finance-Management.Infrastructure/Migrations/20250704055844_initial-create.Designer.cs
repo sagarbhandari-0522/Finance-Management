@@ -12,8 +12,8 @@ using Personal_Finance_Management.Infrastructure.Data;
 namespace Personal_Finance_Management.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250702005656_add-firstname_lastname_User")]
-    partial class addfirstname_lastname_User
+    [Migration("20250704055844_initial-create")]
+    partial class initialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,7 +246,13 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -275,9 +281,15 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transactions");
                 });
@@ -333,15 +345,41 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("Personal_Finance_Management.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Transaction", b =>
                 {
                     b.HasOne("Personal_Finance_Management.Domain.Entities.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Personal_Finance_Management.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Category", b =>

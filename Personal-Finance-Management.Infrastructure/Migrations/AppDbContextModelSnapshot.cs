@@ -358,7 +358,7 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.HasOne("Personal_Finance_Management.Domain.Entities.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Personal_Finance_Management.Domain.Entities.ApplicationUser", "User")

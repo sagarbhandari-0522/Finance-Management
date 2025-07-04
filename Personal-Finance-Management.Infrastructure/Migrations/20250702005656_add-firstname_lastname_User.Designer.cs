@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Personal_Finance_Management.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Personal_Finance_Management.Infrastructure.Data;
 namespace Personal_Finance_Management.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702005656_add-firstname_lastname_User")]
+    partial class addfirstname_lastname_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,13 +246,7 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -336,17 +333,6 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Category", b =>
-                {
-                    b.HasOne("Personal_Finance_Management.Domain.Entities.ApplicationUser", "User")
-                        .WithMany("Categories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Transaction", b =>
                 {
                     b.HasOne("Personal_Finance_Management.Domain.Entities.Category", "Category")
@@ -356,11 +342,6 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Category", b =>

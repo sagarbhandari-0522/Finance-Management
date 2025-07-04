@@ -12,7 +12,9 @@ namespace Personal_Finance_Management.Domain.Entities
         public int Id { get; set; }
         public required string Name { get; set; }
         public required CategoryType Type { get; set; }
-        public List<Transaction> Transactions { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+        public List<Transaction> Transactions { get; set; } = new List<Transaction>();
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Personal_Finance_Management.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Personal_Finance_Management.Infrastructure.Data
 {
-    public class AppDbContext :DbContext
+    public class AppDbContext :IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) :base(options)
         { }
@@ -22,6 +23,12 @@ namespace Personal_Finance_Management.Infrastructure.Data
                 .WithOne(t => t.Category)
                 .HasForeignKey(t => t.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Category>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Categories)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

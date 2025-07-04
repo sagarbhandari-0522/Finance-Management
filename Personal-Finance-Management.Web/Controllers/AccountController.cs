@@ -34,7 +34,7 @@ namespace Personal_Finance_Management.Web.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                AddFirstNameClaims(user);
+                await AddFirstNameClaimsAsync(user);
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
@@ -42,7 +42,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             return View(model);
         }
-    
+
         [HttpGet]
         public IActionResult Login() => View();
         [HttpPost]
@@ -58,7 +58,7 @@ namespace Personal_Finance_Management.Web.Controllers
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                AddFirstNameClaims(user);
+                await AddFirstNameClaimsAsync(user);
                 return RedirectToAction("Index", "Home");
             }
             ModelState.AddModelError(string.Empty, "Invalid Login attempt");
@@ -70,13 +70,17 @@ namespace Personal_Finance_Management.Web.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
-        private async void AddFirstNameClaims(ApplicationUser user)
+        private async Task<bool> AddFirstNameClaimsAsync(ApplicationUser user)
         {
             var existingClaims = await _userManager.GetClaimsAsync(user);
             var existingFirstNameClaim = existingClaims.FirstOrDefault(c => c.Type == "FirstName");
-            if (existingFirstNameClaim != null) await _userManager.RemoveClaimAsync(user, existingFirstNameClaim);
-            await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
-
+            if (existingFirstNameClaim != null)
+            {
+                await _userManager.RemoveClaimAsync(user, existingFirstNameClaim);
+            }
+            var result=await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+            
+            return result.Succeeded;
         }
 
     }

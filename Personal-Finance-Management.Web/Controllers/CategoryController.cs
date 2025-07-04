@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Personal_Finance_Management.Application.Interfaces.IRepositories;
@@ -11,16 +12,17 @@ using System.Collections.Generic;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+        public CategoryController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) :base(userManager)
         {
             _unitOfWork = unitOfWork;
+
         }
         public async Task<IActionResult> Index()
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync(filter: f => (f.UserId == CurrentUserId));
             return View(categories);
         }
 
@@ -42,6 +44,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 {
                     Name = model.Name,
                     Type = (CategoryType)model.Type,
+                    UserId = CurrentUserId
 
                 };
                 await _unitOfWork.CategoryRepository.AddAsync(category);
@@ -53,7 +56,7 @@ namespace Personal_Finance_Management.Web.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var category =await  _unitOfWork.CategoryRepository.FindAsync(id);
+            var category = await _unitOfWork.CategoryRepository.FindAsync(id);
             if (category == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -74,7 +77,7 @@ namespace Personal_Finance_Management.Web.Controllers
             if (!ModelState.IsValid)
             {
                 model.CategoryTypes = CategoryTypeHelper.GetCategory();
-                return View("Edit",model);
+                return View("Edit", model);
 
             }
             var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
@@ -89,7 +92,7 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _unitOfWork.CategoryRepository.FindAsync(id);
-            if(category==null)
+            if (category == null)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -99,7 +102,7 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Delete(Category model)
         {
             var category = await _unitOfWork.CategoryRepository.FindAsync(model.Id);
-            if(category==null)
+            if (category == null)
             {
                 TempData["error"] = "Invalid Request";
                 return RedirectToAction("Error", "Home");

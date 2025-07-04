@@ -1,10 +1,15 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity
+@model System.Security.Claims.ClaimsPrincipal
+@{
+    var firstNameClaim = Model?.Claims.FirstOrDefault(c => c.Type == "FirstName");
+    var displayName = firstNameClaim != null ? firstNameClaim.Value : "User";
+}
 
 <ul class="navbar-nav">
-    @if (User.Identity.IsAuthenticated)
+    @if (Model?.Identity?.IsAuthenticated==true)
     {
         <li class="nav-item"> 
-            <a class="nav-link" href="#">Hello @(User.FindFirst("FirstName").Value!=""?User.FindFirst("FirstName").Value:"User")!</a>
+            <a class="nav-link" href="#">Hello @displayName!</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>

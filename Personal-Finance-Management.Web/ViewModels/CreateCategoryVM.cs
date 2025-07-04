@@ -10,6 +10,7 @@ namespace Personal_Finance_Management.Web.ViewModels
         public  string Name { get; set; }
         [Required(ErrorMessage = "Please select a category type.")]
         public CategoryType? Type { get; set; }
+        public String? UserId { get; set; }
         public List<SelectListItem> CategoryTypes { get; set; } = new();
 
     }

@@ -4,19 +4,22 @@ using Personal_Finance_Management.Web.Helper;
 using Personal_Finance_Management.Web.ViewModels;
 using Personal_Finance_Management.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
-    public class TransactionController : Controller
+    [Authorize]
+    public class TransactionController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public TransactionController(IUnitOfWork unitOfWork)
+        public TransactionController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) :base(userManager)
         {
             _unitOfWork = unitOfWork;
         }
         public async Task<IActionResult> Index()
         {
-            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q =>q.Include(t => t.Category));
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q =>q.Include(t => t.Category), filter: f =>(f.UserId==CurrentUserId));
             return View(transactions);
         }
 
@@ -38,7 +41,8 @@ namespace Personal_Finance_Management.Web.Controllers
                     Description = model.Description,
                     Amount = model.Amount,
                     CategoryId = model.CategoryId,
-                    CreatedAt = model.TransactionAt ?? DateTime.UtcNow
+                    CreatedAt = model.TransactionAt ?? DateTime.UtcNow,
+                    UserId=CurrentUserId
                 };
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
                 await _unitOfWork.SaveChangesAsync();
@@ -50,7 +54,7 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
-                filter: t => t.Id==id,
+                filter: f =>(f.Id==id && f.UserId==CurrentUserId),
                 include: q => q.Include(t=> t.Category)
                 );
             if (transaction == null)
@@ -60,7 +64,7 @@ namespace Personal_Finance_Management.Web.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var transaction = await _unitOfWork.TransactionRepository.FindAsync(id);
+            var transaction = await _unitOfWork.TransactionRepository.GetAsync(filter: f => (f.Id == id && f.UserId == CurrentUserId));
             if (transaction == null)
                 return RedirectToAction("Error", "Home");
             var updateTransactionVM = new UpdateTransactionVM
@@ -81,7 +85,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
                 return View("Edit", model);
             }
-            var transaction = await _unitOfWork.TransactionRepository.FindAsync(model.Id);
+            var transaction = await _unitOfWork.TransactionRepository.GetAsync(filter: f => (f.Id == model.Id && f.UserId == CurrentUserId));
             if (transaction == null)
                 return RedirectToAction("Error", "Home");
             transaction.Description = model.Description;
@@ -96,7 +100,7 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
-               filter: t => t.Id ==id,
+               filter: f => (f.Id == id && f.UserId == CurrentUserId),
                include: q => q.Include(t=> t.Category));
             if (transaction == null)
                 return RedirectToAction("Error", "Home");

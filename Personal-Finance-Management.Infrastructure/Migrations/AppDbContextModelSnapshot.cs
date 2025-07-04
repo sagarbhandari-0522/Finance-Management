@@ -278,9 +278,15 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transactions");
                 });
@@ -352,15 +358,25 @@ namespace Personal_Finance_Management.Infrastructure.Migrations
                     b.HasOne("Personal_Finance_Management.Domain.Entities.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Personal_Finance_Management.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Personal_Finance_Management.Domain.Entities.Category", b =>

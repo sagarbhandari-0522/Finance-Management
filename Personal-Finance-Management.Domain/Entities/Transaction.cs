@@ -16,8 +16,11 @@ namespace Personal_Finance_Management.Domain.Entities
         [Required]
         public string Description { get; set; }
         public int CategoryId { get; set; }
+       
+        public  required string UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
         public Category Category { get; set; } = null!;
+        public ApplicationUser User { get; set; } = null!;
     }
 }

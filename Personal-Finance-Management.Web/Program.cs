@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Personal_Finance_Management.Application.Interfaces.IRepositories;
@@ -9,7 +11,7 @@ using Personal_Finance_Management.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+
 //Configure EFCore
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -19,7 +21,17 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-
+DotNetEnv.Env.Load();
+//OAuth Google Configuration
+builder.Services.AddAuthentication()
+   
+    .AddGoogle(options =>
+    {
+        options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+        options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+        options.CallbackPath = "/signin-google";
+    });
+builder.Services.AddControllersWithViews();
 var app = builder.Build();
 //using (var scope=app.Services.CreateScope())
 //{

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Personal_Finance_Management.Domain.Entities;
 using Personal_Finance_Management.Web.ViewModels;
@@ -68,7 +70,52 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
+        }
+        [HttpGet("external-signin")]
+        public IActionResult ExternalSignIn(string provider)
+        {
+            if (string.IsNullOrEmpty(provider))
+                return BadRequest("Provider is required");
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return RedirectToAction("Login", "Account");
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if(user!=null)
+            {
+                await AddFirstNameClaimsAsync(user);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Home");
+
+            }
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+            var newUser = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName)?? "User",
+                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "N/A",
+            };
+            var identityresult = await _userManager.CreateAsync(newUser);
+            if (identityresult.Succeeded)
+            {
+                identityresult = await _userManager.AddLoginAsync(newUser, info);
+                if (identityresult.Succeeded)
+                {
+                    await AddFirstNameClaimsAsync(newUser);
+                    await _signInManager.SignInAsync(newUser, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            return RedirectToAction("Login", "Account");
         }
         private async Task<bool> AddFirstNameClaimsAsync(ApplicationUser user)
         {
@@ -78,10 +125,11 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 await _userManager.RemoveClaimAsync(user, existingFirstNameClaim);
             }
-            var result=await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
-            
+            var result = await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+
             return result.Succeeded;
         }
+
 
     }
 }

@@ -13,13 +13,13 @@ namespace Personal_Finance_Management.Web.Controllers
     public class TransactionController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public TransactionController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) :base(userManager)
+        public TransactionController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             _unitOfWork = unitOfWork;
         }
         public async Task<IActionResult> Index()
         {
-            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q =>q.Include(t => t.Category), filter: f =>(f.UserId==CurrentUserId));
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId));
             return View(transactions);
         }
 
@@ -42,7 +42,7 @@ namespace Personal_Finance_Management.Web.Controllers
                     Amount = model.Amount,
                     CategoryId = model.CategoryId,
                     CreatedAt = model.TransactionAt ?? DateTime.UtcNow,
-                    UserId=CurrentUserId
+                    UserId = CurrentUserId
                 };
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
                 await _unitOfWork.SaveChangesAsync();
@@ -54,8 +54,8 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
-                filter: f =>(f.Id==id && f.UserId==CurrentUserId),
-                include: q => q.Include(t=> t.Category)
+                filter: f => (f.Id == id && f.UserId == CurrentUserId),
+                include: q => q.Include(t => t.Category)
                 );
             if (transaction == null)
                 return RedirectToAction("Error", "Home");
@@ -73,14 +73,14 @@ namespace Personal_Finance_Management.Web.Controllers
                 Description = transaction.Description,
                 CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync()),
                 CategoryId = transaction.CategoryId,
-                TransactionAt=transaction.CreatedAt
+                TransactionAt = transaction.CreatedAt
             };
             return View(updateTransactionVM);
         }
         [HttpPost]
         public async Task<IActionResult> Update(UpdateTransactionVM model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
                 return View("Edit", model);
@@ -101,7 +101,7 @@ namespace Personal_Finance_Management.Web.Controllers
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
                filter: f => (f.Id == id && f.UserId == CurrentUserId),
-               include: q => q.Include(t=> t.Category));
+               include: q => q.Include(t => t.Category));
             if (transaction == null)
                 return RedirectToAction("Error", "Home");
             return View(transaction);

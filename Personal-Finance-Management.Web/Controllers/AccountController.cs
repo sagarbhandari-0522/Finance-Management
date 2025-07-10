@@ -38,6 +38,7 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 await AddFirstNameClaimsAsync(user);
                 await _signInManager.SignInAsync(user, isPersistent: false);
+                TempData["success"] = "User Created Successfully";
                 return RedirectToAction("Index", "Home");
             }
             foreach (var error in result.Errors)
@@ -61,6 +62,7 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 await AddFirstNameClaimsAsync(user);
+                TempData["success"] = "User Logged in Successfully";
                 return RedirectToAction("Index", "Home");
             }
             ModelState.AddModelError(string.Empty, "Invalid Login attempt");
@@ -70,7 +72,7 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData["success"] = " Logged Out Successfully";
             return RedirectToAction("Login");
         }
         [HttpGet("external-signin")]
@@ -120,10 +122,16 @@ namespace Personal_Finance_Management.Web.Controllers
         public async Task<IActionResult> Setting(string userId)
         {
             if (userId == null)
+            {
+                TempData["error"] = "Invalid Operation: User doesnot exist!";
                 return RedirectToAction("Login");
+            }
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
+                TempData["error"] = "Invalid Operation: User doesnot exist!";
                 return RedirectToAction("Login");
+            }
             var hasPassword = await _userManager.HasPasswordAsync(user);
             var updatePassword = new UpdatePasswordVM()
             {

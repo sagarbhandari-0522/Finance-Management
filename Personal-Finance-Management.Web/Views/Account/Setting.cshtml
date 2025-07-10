@@ -1,0 +1,22 @@
+﻿@model SettingVM;
+@{
+    Console.WriteLine(Model.ActiveTab);
+
+}
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link @(Model.ActiveTab=="Details"? "active":"") " id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Update Details</button>
+        <button class="nav-link @(Model.ActiveTab=="Password"? "active":"")" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Update Password</button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade  @(Model.ActiveTab=="Details"? "show active":"")" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        @await Html.PartialAsync("_UpdateDetailsPartial", Model.userDetails)
+    </div>
+    <div class="tab-pane fade @(Model.ActiveTab=="Password"?"show active":"")" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        @await Html.PartialAsync("_UpdatePasswordPartial", Model.updatePassword)
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

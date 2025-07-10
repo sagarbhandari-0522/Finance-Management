@@ -88,7 +88,7 @@ namespace Personal_Finance_Management.Web.Controllers
             if (info == null)
                 return RedirectToAction("Login", "Account");
             var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            if(user!=null)
+            if (user != null)
             {
                 await AddFirstNameClaimsAsync(user);
                 await _signInManager.SignInAsync(user, isPersistent: false);
@@ -101,7 +101,7 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 UserName = email,
                 Email = email,
-                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName)?? "User",
+                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "User",
                 LastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "N/A",
             };
             var identityresult = await _userManager.CreateAsync(newUser);
@@ -116,6 +116,112 @@ namespace Personal_Finance_Management.Web.Controllers
                 }
             }
             return RedirectToAction("Login", "Account");
+        }
+        public async Task<IActionResult> Setting(string userId)
+        {
+            if (userId == null)
+                return RedirectToAction("Login");
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return RedirectToAction("Login");
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            var updatePassword = new UpdatePasswordVM()
+            {
+                UserId = user.Id,
+                IsExternalUser = !hasPassword
+            };
+            var updateDetails = new UpdateUserDetailsVM
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email ?? "",
+                UserId = user.Id,
+                IsExternalUser = !hasPassword
+            };
+            var settingVM = new SettingVM
+            {
+                userDetails = updateDetails,
+                updatePassword = updatePassword,
+                ActiveTab = "Details",
+            };
+            return View(settingVM);
+        }
+        public async Task<IActionResult> UpdateDetails(UpdateUserDetailsVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var settingModel = new SettingVM
+                {
+                    userDetails = model,
+                    updatePassword = new UpdatePasswordVM() { UserId = "", IsExternalUser = model?.IsExternalUser ?? true },
+                    ActiveTab = "Details",
+                };
+                return View("Setting", settingModel);
+            }
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+                return RedirectToAction("Login");
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                var settingModel = new SettingVM
+                {
+                    userDetails = model,
+                    updatePassword = new UpdatePasswordVM { UserId = model.UserId, IsExternalUser = !hasPassword },
+                    ActiveTab = "Details"
+
+                };
+                return View("Setting", settingModel);
+            }
+            await AddFirstNameClaimsAsync(user);
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordVM model)
+        {
+            if (model.IsExternalUser) return RedirectToAction("Login");
+            if (!ModelState.IsValid)
+            {
+                var newsettingModel = new SettingVM
+                {
+                    userDetails = new UpdateUserDetailsVM { IsExternalUser = model?.IsExternalUser ?? true },
+                    updatePassword = model,
+                    ActiveTab = "Password"
+                };
+                return View("Setting", newsettingModel);
+            }
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+                return RedirectToAction("Login");
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Password Updated Successfully";
+                return RedirectToAction("Logout");
+            }
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+
+            var settingModel = new SettingVM
+            {
+                userDetails = new UpdateUserDetailsVM
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    IsExternalUser = model.IsExternalUser
+                },
+                updatePassword = model,
+                ActiveTab = "Password"
+            };
+            return View("Setting", settingModel);
         }
         private async Task<bool> AddFirstNameClaimsAsync(ApplicationUser user)
         {

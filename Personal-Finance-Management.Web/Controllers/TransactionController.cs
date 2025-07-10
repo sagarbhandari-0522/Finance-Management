@@ -46,6 +46,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 };
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
                 await _unitOfWork.SaveChangesAsync();
+                TempData["success"] = "Transaction added successfully";
                 return RedirectToAction("Index");
             }
             model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
@@ -94,6 +95,7 @@ namespace Personal_Finance_Management.Web.Controllers
             transaction.CreatedAt = model.TransactionAt ?? DateTime.UtcNow;
             transaction.UpdatedAt = DateTime.UtcNow;
             await _unitOfWork.SaveChangesAsync();
+            TempData["success"] = "Transaction updated successfully";
             return RedirectToAction("Index");
         }
 
@@ -113,6 +115,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 return RedirectToAction("Error", "Home");
             _unitOfWork.TransactionRepository.Remove(model);
             await _unitOfWork.SaveChangesAsync();
+            TempData["success"] = "Transaction Deleted";
             return RedirectToAction("Index");
         }
 

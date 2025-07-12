@@ -16,6 +16,20 @@
                 </a>
             </div>
         </div>
+        <div class="row pb-3">
+            <div class="col-6 offset-6 text-end">
+               <form asp-controller="transaction" asp-action="index" method="get">
+                   <label for="startdate">From:</label>
+                   <input type="date" id="startdate" name="fromDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                   <label for="todate">To</label>
+                    <input type="date" id="todate" name="toDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"  />
+                   <input type="submit" value="Submit" />
+               </form>
+            </div>
+            <div>
+                <a asp-controller="Transaction" asp-action="Index">Clear Filter</a>
+            </div>
+        </div>
 
         <table class="table table-bordered table-striped">
             <thead>

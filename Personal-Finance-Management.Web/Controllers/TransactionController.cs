@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using Personal_Finance_Management.Application.Interfaces.IRepositories;
 using Personal_Finance_Management.Web.Helper;
 using Personal_Finance_Management.Web.ViewModels;
@@ -17,9 +18,12 @@ namespace Personal_Finance_Management.Web.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateOnly? fromDate, DateOnly? toDate)
         {
-            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId));
+            DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
+            DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId && (f.CreatedAt >= from && f.CreatedAt<=to)));
+
             return View(transactions);
         }
 
@@ -27,7 +31,7 @@ namespace Personal_Finance_Management.Web.Controllers
         {
             var transactionVM = new CreateTransactionVM
             {
-                CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync())
+                CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync(filter: f => (f.UserId == CurrentUserId)))
             };
             return View(transactionVM);
         }
@@ -52,6 +56,7 @@ namespace Personal_Finance_Management.Web.Controllers
             model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
             return View(model);
         }
+     
         public async Task<IActionResult> Details(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
@@ -118,6 +123,8 @@ namespace Personal_Finance_Management.Web.Controllers
             TempData["success"] = "Transaction Deleted";
             return RedirectToAction("Index");
         }
+
+     
 
     }
 }

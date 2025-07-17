@@ -1,33 +1,28 @@
-﻿
-@model List<Transaction>
+﻿@model CategoryDetailsVM
 <div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Transaction List</h2>
+                <h2 class="text-white py-2">@Model.Name (@Model.Type)</h2>
             </div>
         </div>
     </div>
     <div class="card-body border p-4">
         <div class="row pb-3">
             <div class="col-6 offset-6 text-end">
-                <a asp-controller="Transaction" asp-action="Create" class="btn btn-secondary">
-                    <i class="bi bi-plus-circle"></i> Create New Transaction
-                </a>
-            </div>
-        </div>
-        <div class="row pb-3">
-            <div class="col-6 offset-6 text-end">
-               <form asp-controller="transaction" asp-action="index" method="get">
-                   <label for="startdate">From:</label>
-                   <input type="date" id="startdate" name="fromDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                   <label for="todate">To</label>
-                    <input type="date" id="todate" name="toDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"  />
-                   <input type="submit" value="Submit" />
-               </form>
+                <form asp-controller="Category" asp-action="Details" method="get">
+                    <input type="hidden" name="id" value="@Model.Id"/>
+                    <label for="startdate">From:</label>
+                    <input type="date" id="startdate" name="fromDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    <label for="todate">To</label>
+                    <input type="date" id="todate" name="toDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    <input type="submit" value="Submit" />
+                </form>
+                <a asp-controller="Category" asp-action="Details" asp-route-id="@Model.Id">Clear Filter</a>
             </div>
             <div>
-                <a asp-controller="Transaction" asp-action="Index">Clear Filter</a>
+                <p>Total Transaction: <strong>@Model.TransactionCount</strong> </p>
+                <p>Total Amount: <strong>@Model.TotalAmount</strong></p>
             </div>
         </div>
 
@@ -41,7 +36,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var obj in Model)
+                @foreach (var obj in Model.TransactionList)
                 {
                     <tr>
                         <td>@obj.Category.Name</td>

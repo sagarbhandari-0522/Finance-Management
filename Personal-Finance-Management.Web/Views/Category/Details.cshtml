@@ -1,0 +1,68 @@
+﻿@model CategoryDetailsVM
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">@Model.Name (@Model.Type)</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <div class="row pb-3">
+            <div class="col-6 offset-6 text-end">
+                <form asp-controller="Category" asp-action="Details" method="get">
+                    <input type="hidden" name="id" value="@Model.Id"/>
+                    <label for="startdate">From:</label>
+                    <input type="date" id="startdate" name="fromDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    <label for="todate">To</label>
+                    <input type="date" id="todate" name="toDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    <input type="submit" value="Submit" />
+                </form>
+                <a asp-controller="Category" asp-action="Details" asp-route-id="@Model.Id">Clear Filter</a>
+            </div>
+            <div>
+                <p>Total Transaction: <strong>@Model.TransactionCount</strong> </p>
+                <p>Total Amount: <strong>@Model.TotalAmount</strong></p>
+            </div>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th> Category</th>
+                    <th> Type</th>
+                    <th>Amount</th>
+                    <th>Transaction At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model.TransactionList)
+                {
+                    <tr>
+                        <td>@obj.Category.Name</td>
+                        <td>@obj.Category.Type</td>
+                        <td>@obj.Amount.ToString("C")</td>
+                        <td> @obj.CreatedAt.ToString("yyyy-MM-dd")</td>
+
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="Transaction" asp-action="Details" asp-route-Id="@obj.Id"
+                                   class="btn btn-primary mx-2">
+                                    <i class="bi bi-eye-fill"></i> View
+                                </a>
+                                <a asp-controller="Transaction" asp-action="Edit" asp-route-Id="@obj.Id"
+                                   class="btn btn-success mx-2">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a asp-controller="Transaction" asp-action="Delete" asp-route-Id="@obj.Id"
+                                   class="btn btn-danger mx-2">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

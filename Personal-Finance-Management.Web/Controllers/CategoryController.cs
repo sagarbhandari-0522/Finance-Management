@@ -17,7 +17,7 @@ namespace Personal_Finance_Management.Web.Controllers
     public class CategoryController : BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) :base(userManager)
+        public CategoryController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             _unitOfWork = unitOfWork;
 
@@ -58,7 +58,7 @@ namespace Personal_Finance_Management.Web.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f =>(f.Id==id && f.UserId==CurrentUserId));
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id == id && f.UserId == CurrentUserId));
             if (category == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -90,10 +90,28 @@ namespace Personal_Finance_Management.Web.Controllers
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-
+        public async Task<IActionResult> Details(int id, DateOnly? fromDate, DateOnly? toDate)
+        {
+            var category = await _unitOfWork.CategoryRepository.GetAsync(include: q => q.Include(c => c.Transactions), filter: f => (f.UserId == CurrentUserId) && f.Id == id);
+            if (category == null)
+                return RedirectToAction("Error", "Home");
+            DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
+            DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
+            var transactions =  category.Transactions.Where(t => t.CreatedAt >= from && t.CreatedAt<=to).ToList();
+            var categoryDetails = new CategoryDetailsVM()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Type = category.Type,
+                TransactionCount = transactions.Count,
+                TotalAmount = transactions.Sum(t => t.Amount),
+                TransactionList = transactions
+            };
+            return View(categoryDetails);
+        }
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _unitOfWork.CategoryRepository.GetAsync(filter:f => (f.Id == id && f.UserId == CurrentUserId));
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id == id && f.UserId == CurrentUserId));
             if (category == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -103,7 +121,7 @@ namespace Personal_Finance_Management.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Category model)
         {
-            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id==model.Id && f.UserId==CurrentUserId));
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => (f.Id == model.Id && f.UserId == CurrentUserId));
             if (category == null)
             {
                 TempData["error"] = "Invalid Request";
@@ -113,7 +131,5 @@ namespace Personal_Finance_Management.Web.Controllers
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-
-
     }
 }

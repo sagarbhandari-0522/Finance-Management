@@ -31,7 +31,7 @@ namespace Personal_Finance_Management.Web.Controllers
         {
             var transactionVM = new CreateTransactionVM
             {
-                CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync())
+                CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync(filter: f => (f.UserId == CurrentUserId)))
             };
             return View(transactionVM);
         }
@@ -56,6 +56,7 @@ namespace Personal_Finance_Management.Web.Controllers
             model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
             return View(model);
         }
+     
         public async Task<IActionResult> Details(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(

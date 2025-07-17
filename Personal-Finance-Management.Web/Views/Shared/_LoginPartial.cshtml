@@ -5,26 +5,16 @@
     var displayName = firstNameClaim != null ? firstNameClaim.Value : "User";
     var userId = Model?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
 }
-<ul class="navbar-nav">
-    @if (Model?.Identity?.IsAuthenticated == true)
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="#">Hello @displayName!</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
-        </li>
-        <li>
-            <a class="nav-link" asp-controller="Account" asp-action="Setting" asp-route-userId="@userId">User Setting</a>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-        </li>
-    }
-</ul>
+
+@if (Model?.Identity?.IsAuthenticated == true)
+{
+    <span class="me-3">Hello, @displayName!</span>
+    <a class="btn btn-danger" asp-controller="Account" asp-action="Logout">Logout</a>
+
+}
+else
+{
+    <a class="btn btn-success m-1" asp-controller="Account" asp-action="Register">Register</a>
+    <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login</a>
+
+}

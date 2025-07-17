@@ -2,7 +2,116 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex">
+
+
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+    
+
+        <!-- Dashboard Content -->
+        <div class="container py-4">
+            <h2 class="mb-4">Dashboard</h2>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow text-center">
+                        <div class="card-body">
+                            <h6>Total Expenses</h6>
+                            <h4>$2,550.00</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow text-center">
+                        <div class="card-body">
+                            <h6>Total Transactions</h6>
+                            <h4>32</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow text-center">
+                        <div class="card-body">
+                            <h6>Categories Used</h6>
+                            <h4>6</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow text-center">
+                        <div class="card-body">
+                            <h6>Last Transaction</h6>
+                            <h4>16 July</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Expenses by Category</h5>
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Transactions</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>16 July</td>
+                                <td>Rent Payment</td>
+                                <td>$800</td>
+                                <td>Housing</td>
+                            </tr>
+                            <tr>
+                                <td>15 July</td>
+                                <td>Groceries</td>
+                                <td>$120</td>
+                                <td>Food</td>
+                            </tr>
+                            <tr>
+                                <td>14 July</td>
+                                <td>Transport</td>
+                                <td>$50</td>
+                                <td>Travel</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Rent', 'Groceries', 'Transport'],
+                datasets: [{
+                    label: 'Expenses',
+                    data: [1000, 800, 500],
+                    backgroundColor: ['#dc3545', '#ffc107', '#0d6efd'],
+                }]
+            }
+        });
+    </script>
+}

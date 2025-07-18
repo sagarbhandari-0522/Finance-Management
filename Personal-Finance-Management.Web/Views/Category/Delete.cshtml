@@ -1,46 +1,45 @@
-﻿@model Category;
-<div class="w-100 card border-0 p-4">
-    More actions
-    <div class="card-header bg-success bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Delete Category</h2>
-            </div>
-        </div>
-    </div>
-    <div class="card-body border p-4">
-        <form method="post" class="row">
-            <input asp-for="Id" hidden />
-            <div class="p-3">
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="Name" class="form-control border shadow" readonly />
-                    <label asp-for="Name" class="ms-2"></label>
-                </div>
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="Type" class="form-control border shadow" disabled />
-                    <label asp-for="Type" class="ms-2"></label>
-                </div>
-              
+﻿@model Category
 
-                <div class="row pt-2">
-                    <div class="col-6 col-md-3">
-                        <button type="submit" class="btn btn-success w-100" asp-controller="Category" asp-action="Delete">
-                            <i class="bi bi-check-circle"></i> Delete
-                        </button>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <a asp-controller="Category" asp-action="Index" class="btn btn-secondary w-100">
-                            <i class="bi bi-x-circle"></i> Cancel
-                        </a>
-                    </div>
+<div class="card border-0 shadow p-4">
+    <div class="card-header bg-danger bg-gradient py-3">
+        <h2 class="text-center text-white mb-0">Delete Category</h2>
+    </div>
+
+    <div class="card-body">
+        <form method="post">
+            <input asp-for="Id" type="hidden" />
+
+            <div class="mb-4">
+                <label asp-for="Name" class="form-label fw-bold">Category Name</label>
+                <input asp-for="Name" class="form-control" readonly />
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Type" class="form-label fw-bold">Category Type</label>
+                <input asp-for="Type" class="form-control" disabled />
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <button type="submit" class="btn btn-danger w-100" asp-controller="Category" asp-action="Delete">
+                        <i class="bi bi-trash-fill"></i> Delete
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
                 </div>
             </div>
         </form>
     </div>
+    <div class="mt-3">
+        <a href="javascript:history.back()" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back
+        </a>
+    </div>
 </div>
 
 @section Scripts {
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -24,7 +24,7 @@ namespace Personal_Finance_Management.Web.Controllers
 
         public IActionResult Index()
         {
-            var transactions = _context.Transactions.Include(t => t.Category).Where(t => t.UserId == CurrentUserId);
+            var transactions = _context.Transactions.Where(t => t.UserId == CurrentUserId);
             var totalIncome = transactions.Where(t => t.Category.Type == CategoryType.Income).Sum(t => t.Amount);
             var totalExpense = transactions.Where(t => t.Category.Type == CategoryType.Expense).Sum(t => t.Amount);
             var categoriesCount = transactions.Select(t => t.CategoryId).Distinct().Count();
@@ -53,7 +53,7 @@ namespace Personal_Finance_Management.Web.Controllers
             {
                 monthAmount[item.Month-1] = item.TotalAmount;
             }
-            var lastFourTransactions = transactions.OrderByDescending(t =>t.CreatedAt ).Take(4).ToList();
+            var lastFourTransactions = transactions.Include(t => t.Category).OrderByDescending(t =>t.CreatedAt ).Take(4).ToList();
 
             Console.WriteLine(trasactionWIthMonth);
             var dashboardVM = new DashboardVM()

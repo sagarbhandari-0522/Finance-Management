@@ -1,22 +1,40 @@
-﻿@model SettingVM;
-@{
-    Console.WriteLine(Model.ActiveTab);
+﻿@model SettingVM
 
-}
-<nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link @(Model.ActiveTab=="Details"? "active":"") " id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Update Details</button>
-        <button class="nav-link @(Model.ActiveTab=="Password"? "active":"")" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Update Password</button>
+<div class="card shadow border-0 p-4 mb-4">
+    <div class="card-header bg-success text-white text-center py-3">
+        <h3><i class="bi bi-person-gear me-2"></i>User Settings</h3>
     </div>
-</nav>
-<div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade  @(Model.ActiveTab=="Details"? "show active":"")" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-        @await Html.PartialAsync("_UpdateDetailsPartial", Model.userDetails)
-    </div>
-    <div class="tab-pane fade @(Model.ActiveTab=="Password"?"show active":"")" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-        @await Html.PartialAsync("_UpdatePasswordPartial", Model.updatePassword)
+    <div class="card-body">
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(Model.ActiveTab == "Details" ? "active" : "")"
+                        id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
+                        type="button" role="tab" aria-controls="details" aria-selected="@(Model.ActiveTab == "Details")">
+                    Update Details
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(Model.ActiveTab == "Password" ? "active" : "")"
+                        id="password-tab" data-bs-toggle="tab" data-bs-target="#password"
+                        type="button" role="tab" aria-controls="password" aria-selected="@(Model.ActiveTab == "Password")">
+                    Update Password
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="settingsTabContent">
+            <div class="tab-pane fade @(Model.ActiveTab == "Details" ? "show active" : "")" id="details" role="tabpanel" aria-labelledby="details-tab">
+                @await Html.PartialAsync("_UpdateDetailsPartial", Model.userDetails)
+            </div>
+            <div class="tab-pane fade @(Model.ActiveTab == "Password" ? "show active" : "")" id="password" role="tabpanel" aria-labelledby="password-tab">
+                @await Html.PartialAsync("_UpdatePasswordPartial", Model.updatePassword)
+            </div>
+        </div>
     </div>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

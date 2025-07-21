@@ -1,6 +1,6 @@
 ﻿@model UpdateTransactionVM;
 <div class="w-100 card border-0 p-4">
-    More actions
+
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
@@ -52,11 +52,17 @@
             </div>
 
         </form>
+        <div class="mt-3">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Back
+            </a>
+        </div>
     </div>
+
 </div>
 
 @section Scripts {
     @{
-                <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" />
     }
 }

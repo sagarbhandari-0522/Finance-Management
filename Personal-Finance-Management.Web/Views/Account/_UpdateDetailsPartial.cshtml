@@ -1,21 +1,27 @@
-﻿@model UpdateUserDetailsVM;
+﻿@model UpdateUserDetailsVM
+
 <form asp-action="UpdateDetails" method="post">
     <input type="hidden" asp-for="UserId" />
 
     <div class="mb-3">
-        <label asp-for="FirstName" class="form-label"></label>
+        <label asp-for="FirstName" class="form-label">First Name</label>
         <input asp-for="FirstName" class="form-control" />
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label asp-for="LastName" class="form-label"></label>
+        <label asp-for="LastName" class="form-label">Last Name</label>
         <input asp-for="LastName" class="form-control" />
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
+        <label asp-for="Email" class="form-label">Email</label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Update</button>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-save2"></i> Update Details
+    </button>
 </form>

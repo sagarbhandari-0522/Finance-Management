@@ -10,6 +10,7 @@ using Personal_Finance_Management.Infrastructure.Repositories;
 using Personal_Finance_Management.Web.Helper;
 using Personal_Finance_Management.Web.ViewModels;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
@@ -97,7 +98,7 @@ namespace Personal_Finance_Management.Web.Controllers
                 return RedirectToAction("Error", "Home");
             DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
             DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
-            var transactions =  category.Transactions.Where(t => t.CreatedAt >= from && t.CreatedAt<=to).ToList();
+            var transactions = category.Transactions.Where(t => t.CreatedAt >= from && t.CreatedAt <= to).ToList();
             var categoryDetails = new CategoryDetailsVM()
             {
                 Id = category.Id,
@@ -105,7 +106,9 @@ namespace Personal_Finance_Management.Web.Controllers
                 Type = category.Type,
                 TransactionCount = transactions.Count,
                 TotalAmount = transactions.Sum(t => t.Amount),
-                TransactionList = transactions
+                TransactionList = transactions,
+                FromDateFilter = fromDate,
+                ToDateFilter = toDate
             };
             return View(categoryDetails);
         }
@@ -130,6 +133,23 @@ namespace Personal_Finance_Management.Web.Controllers
             _unitOfWork.CategoryRepository.Remove(category);
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> ExportCSV(DateOnly? fromDate, DateOnly? toDate, int id)
+        {
+            var category = await _unitOfWork.CategoryRepository.GetAsync(include: q => q.Include(c => c.Transactions), filter: f => (f.UserId == CurrentUserId) && f.Id == id);
+            if (category == null)
+                return RedirectToAction("Error", "Home");
+            DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
+            DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
+            var transactions = category.Transactions.Where(t => t.CreatedAt >= from && t.CreatedAt <= to).ToList();
+            var csvBuilder = new StringBuilder();
+            csvBuilder.AppendLine("Date,Category,Description,Amount");
+            foreach (var transaction in transactions)
+            {
+                csvBuilder.AppendLine($"{transaction.CreatedAt.ToString("yyyy-MM-dd")},{transaction.Category.Name},{transaction.Description},{transaction.Amount}");
+            }
+            var fileName = $"{DateTime.UtcNow.ToString("yyyy-MM-dd")}.csv";
+            return File(Encoding.UTF8.GetBytes(csvBuilder.ToString()), "text/csv", $"{fileName}");
         }
     }
 }

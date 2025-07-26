@@ -11,6 +11,8 @@ namespace Personal_Finance_Management.Web.ViewModels
         public CategoryType Type { get; set; }
         public int TransactionCount { get; set; }
         public decimal TotalAmount { get; set; }
+        public DateOnly? FromDateFilter { get; set; }
+        public DateOnly? ToDateFilter { get; set; }
         public List<Transaction> TransactionList { get; set; } = new List<Transaction>();
     }
 }

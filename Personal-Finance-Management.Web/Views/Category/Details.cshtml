@@ -10,26 +10,29 @@
 
     <!-- Filter + Summary -->
     <div class="card-body border mt-3">
-        <div class="row mb-4 align-items-end">
-            <!-- Filter Form -->
+        <div class="row mb-4 align-items-end justify-content-between">
+            <!-- Filter + Export Buttons (Left Side) -->
             <div class="col-md-8">
-                <form asp-controller="Category" asp-action="Details" method="get" class="row g-2 align-items-end">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                <div class="row g-2 align-items-end">
+                    <!-- Filter Form -->
+                    <form asp-controller="Category" asp-action="Details" method="get" class="row gx-2 gy-2 align-items-end col-md-10">
+                        <input type="hidden" name="id" value="@Model.Id" />
 
-                    <div class="col-auto">
-                        <label class="form-label fw-bold">From</label>
-                        <input type="date" name="fromDate" class="form-control"
-                               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                    </div>
+                        <div class="col-auto">
+                            <label class="form-label fw-bold">From</label>
+                            <input type="date" name="fromDate" class="form-control"
+                                   value="@(Model.FromDateFilter?.ToString("yyyy-MM-dd") ?? "")"
+                                   max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                        </div>
 
-                    <div class="col-auto">
-                        <label class="form-label fw-bold">To</label>
-                        <input type="date" name="toDate" class="form-control"
-                               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                    </div>
+                        <div class="col-auto">
+                            <label class="form-label fw-bold">To</label>
+                            <input type="date" name="toDate" class="form-control"
+                                   value="@(Model.ToDateFilter?.ToString("yyyy-MM-dd") ?? "")"
+                                   max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                        </div>
 
-                    <div class="col-auto">
-                        <div class="d-flex gap-2">
+                        <div class="col-auto d-flex gap-2">
                             <button type="submit" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1">
                                 <i class="bi bi-funnel-fill"></i>
                                 <span>Filter</span>
@@ -40,12 +43,22 @@
                                 <span>Clear</span>
                             </a>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
+                    <!-- Export CSV Form (beside filter form) -->
+                    <form asp-action="ExportCSV" method="post" class="col-md-2">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="fromDate" value="@Model.FromDateFilter" />
+                        <input type="hidden" name="toDate" value="@Model.ToDateFilter" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 w-100">
+                            <i class="bi bi-download"></i>
+                            <span>Export CSV</span>
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <!-- Summary -->
+            <!-- Summary (Right Side) -->
             <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
                 <p class="mb-1 fw-bold">
                     <i class="bi bi-receipt-cutoff me-1"></i>Total Transactions:

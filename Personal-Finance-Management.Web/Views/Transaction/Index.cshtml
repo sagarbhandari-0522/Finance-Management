@@ -1,78 +1,5 @@
 ﻿@using Personal_Finance_Management.Domain.Enums
-@* 
-@model List<Transaction>
-<div class="w-100 card border-0 p-4">
-    <div class="card-header bg-success bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Transaction List</h2>
-            </div>
-        </div>
-    </div>
-    <div class="card-body border p-4">
-        <div class="row pb-3">
-            <div class="col-6 offset-6 text-end">
-                <a asp-controller="Transaction" asp-action="Create" class="btn btn-secondary">
-                    <i class="bi bi-plus-circle"></i> Create New Transaction
-                </a>
-            </div>
-        </div>
-        <div class="row pb-3">
-            <div class="col-6 offset-6 text-end">
-               <form asp-controller="transaction" asp-action="index" method="get">
-                   <label for="startdate">From:</label>
-                   <input type="date" id="startdate" name="fromDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                   <label for="todate">To</label>
-                    <input type="date" id="todate" name="toDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"  />
-                   <input type="submit" value="Submit" />
-               </form>
-            </div>
-            <div>
-                <a asp-controller="Transaction" asp-action="Index">Clear Filter</a>
-            </div>
-        </div>
-
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th> Category</th>
-                    <th> Type</th>
-                    <th>Amount</th>
-                    <th>Transaction At</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var obj in Model)
-                {
-                    <tr>
-                        <td>@obj.Category.Name</td>
-                        <td>@obj.Category.Type</td>
-                        <td>@obj.Amount.ToString("C")</td>
-                        <td> @obj.CreatedAt.ToString("yyyy-MM-dd")</td>
-
-                        <td>
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Transaction" asp-action="Details" asp-route-Id="@obj.Id"
-                                   class="btn btn-primary mx-2">
-                                    <i class="bi bi-eye-fill"></i> View
-                                </a>
-                                <a asp-controller="Transaction" asp-action="Edit" asp-route-Id="@obj.Id"
-                                   class="btn btn-success mx-2">
-                                    <i class="bi bi-pencil-square"></i> Edit
-                                </a>
-                                <a asp-controller="Transaction" asp-action="Delete" asp-route-Id="@obj.Id"
-                                   class="btn btn-danger mx-2">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div> *@
-@model List<Transaction>
+@model TransactionListVM
 
 <div class="card shadow border-0 w-100">
     <!-- Header -->
@@ -85,41 +12,44 @@
     <!-- Body -->
     <div class="card-body p-4 border-top">
         <!-- Top Bar: Filter + Create -->
-        <div class="row mb-4 align-items-end">
+        <div class="row mb-4 align-items-end justify-content-between">
             <!-- Filter Form -->
             <div class="col-md-8">
-                <form asp-controller="Transaction" asp-action="Index" method="get" class="row g-2 align-items-end">
-                    <div class="col-auto">
-                        <label class="form-label fw-semibold">From:</label>
-                        <input type="date" class="form-control" name="fromDate"
-                               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                    </div>
-                    <div class="col-auto">
-                        <label class="form-label fw-semibold">To:</label>
-                        <input type="date" class="form-control" name="toDate"
-                               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                    </div>
-                    <div class="col-auto">
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1">
-                                <i class="bi bi-funnel-fill"></i>
-                                <span>Filter</span>
-                            </button>
-                            <a asp-controller="Transaction" asp-action="Index" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
-                                <i class="bi bi-x-circle"></i>
-                                <span>Clear</span>
-                            </a>
+                <div class="row g-2 align-items-end">
+
+                    <form asp-controller="Transaction" asp-action="Index" method="get" class="row g-2 align-items-end col-md-10">
+                        <div class="col-auto">
+                            <label class="form-label fw-semibold">From:</label>
+                            <input type="date" class="form-control" name="fromDate" value="@(Model.FromDate?.ToString("yyyy-MM-dd")?? "")"
+                                   max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
                         </div>
-                    </div>
-                    @*  <div class="col-auto d-flex gap-2">
-                        <button type="submit" class="btn btn-outline-success">
-                            <i class="bi bi-funnel-fill"></i> Filter
+                        <div class="col-auto">
+                            <label class="form-label fw-semibold">To:</label>
+                            <input type="date" class="form-control" name="toDate" value="@(Model.ToDate?.ToString("yyyy-MM-dd")?? "")"
+                                   max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1">
+                                    <i class="bi bi-funnel-fill"></i>
+                                    <span>Filter</span>
+                                </button>
+                                <a asp-controller="Transaction" asp-action="Index" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
+                                    <i class="bi bi-x-circle"></i>
+                                    <span>Clear</span>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    <form asp-action="ExportCSV" method="get" class="col-md-2">
+                        <input type="hidden" name="fromDate" value="@(Model.FromDate?.ToString("yyyy-MM-dd")?? "")"/>
+                        <input type="hidden" name="toDate" value="@(Model.ToDate?.ToString("yyyy-MM-dd")?? "")" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 w-100">
+                            <i class="bi bi-download"></i>
+                            <span>Export CSV</span>
                         </button>
-                        <a asp-controller="Transaction" asp-action="Index" class="btn btn-outline-danger">
-                            <i class="bi bi-x-circle"></i> Clear
-                        </a>
-                    </div> *@
-                </form>
+                    </form>
+                </div>
             </div>
 
             <!-- Create Button -->
@@ -127,6 +57,7 @@
                 <a asp-controller="Transaction" asp-action="Create" class="btn btn-secondary">
                     <i class="bi bi-plus-circle me-1"></i> Create New Transaction
                 </a>
+
             </div>
         </div>
 
@@ -143,9 +74,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model.Any())
+                    @if (Model.Transactions.Any())
                     {
-                        foreach (var obj in Model)
+                        foreach (var obj in Model.Transactions)
                         {
                             <tr>
                                 <td>@obj.Category.Name</td>

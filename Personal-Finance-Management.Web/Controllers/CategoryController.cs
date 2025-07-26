@@ -136,12 +136,12 @@ namespace Personal_Finance_Management.Web.Controllers
         }
         public async Task<IActionResult> ExportCSV(DateOnly? fromDate, DateOnly? toDate, int id)
         {
-            var category = await _unitOfWork.CategoryRepository.GetAsync(include: q => q.Include(c => c.Transactions), filter: f => (f.UserId == CurrentUserId) && f.Id == id);
+            var category = await _unitOfWork.CategoryRepository.GetAsync(filter: f => f.Id == id);
             if (category == null)
                 return RedirectToAction("Error", "Home");
             DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
             DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
-            var transactions = category.Transactions.Where(t => t.CreatedAt >= from && t.CreatedAt <= to).ToList();
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId && (f.CreatedAt >= from && f.CreatedAt <= to) && f.Category.Id == id));
             var csvBuilder = new StringBuilder();
             csvBuilder.AppendLine("Date,Category,Description,Amount");
             foreach (var transaction in transactions)

@@ -7,6 +7,7 @@ using Personal_Finance_Management.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace Personal_Finance_Management.Web.Controllers
 {
@@ -20,11 +21,17 @@ namespace Personal_Finance_Management.Web.Controllers
         }
         public async Task<IActionResult> Index(DateOnly? fromDate, DateOnly? toDate)
         {
-            DateTime from = fromDate?.ToDateTime(TimeOnly.MinValue) ?? new DateTime();
-            DateTime to = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
-            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId && (f.CreatedAt >= from && f.CreatedAt<=to)));
-
-            return View(transactions);
+            DateTime fromDateTime = fromDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.MinValue;
+            DateTime toDateTime = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
+            Console.WriteLine($"{fromDateTime}+{toDateTime}");
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => (f.UserId == CurrentUserId && (f.CreatedAt >= fromDateTime && f.CreatedAt <= toDateTime)));
+            var transactionListVM = new TransactionListVM()
+            {
+                Transactions = transactions,
+                ToDate = toDate,
+                FromDate = fromDate
+            };
+            return View(transactionListVM);
         }
 
         public async Task<IActionResult> Create()
@@ -56,7 +63,7 @@ namespace Personal_Finance_Management.Web.Controllers
             model.CategoryList = CategoryListHelper.CategoryList(await _unitOfWork.CategoryRepository.GetAllAsync());
             return View(model);
         }
-     
+
         public async Task<IActionResult> Details(int id)
         {
             var transaction = await _unitOfWork.TransactionRepository.GetAsync(
@@ -124,7 +131,20 @@ namespace Personal_Finance_Management.Web.Controllers
             return RedirectToAction("Index");
         }
 
-     
-
+        public async Task<IActionResult> ExportCSV(DateOnly? fromDate, DateOnly? toDate)
+        {
+            DateTime fromDateTime = fromDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.MinValue;
+            DateTime toDateTime = toDate?.ToDateTime(TimeOnly.MaxValue) ?? DateTime.UtcNow;
+            Console.WriteLine($"{fromDateTime}+{toDateTime}");
+            var transactions = await _unitOfWork.TransactionRepository.GetAllAsync(include: q => q.Include(t => t.Category), filter: f => ((f.UserId == CurrentUserId) && (f.CreatedAt >= fromDateTime && f.CreatedAt <= toDateTime)));
+            Console.WriteLine(transactions.Count);
+            var csvBuilder = new StringBuilder();
+            csvBuilder.AppendLine("Date,Category,Description,Amount");
+            foreach (var transaction in transactions)
+            {
+                csvBuilder.AppendLine($"{transaction.CreatedAt.ToString("yyyy-MM-dd")},{transaction.Category.Name},{transaction.Description},{transaction.Amount}");
+            }
+            return File(Encoding.UTF8.GetBytes(csvBuilder.ToString()), "text/csv", $"{DateTime.UtcNow.ToString("yyyy-MM-dd")}.csv");
+        }
     }
 }
